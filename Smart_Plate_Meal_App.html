@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Smart Plate - Meal Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 980px; margin: auto; }
+    h2 { margin-bottom: 6px; }
+    .box { border: 1px solid #ddd; border-radius: 10px; padding: 14px; margin: 12px 0; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    input { width: 90px; padding: 6px; }
+    .wide { width: 220px; }
+    button { margin-top: 12px; padding: 10px 18px; cursor: pointer; }
+    .result { margin-top: 14px; font-size: 16px; }
+    .small { color: #555; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<h2>🍽 Smart Plate, Strong Body</h2>
+<div class="small">Enter your recommended daily values, then enter your meals. Click Calculate.</div>
+
+<div class="box">
+  <h3>1) Recommended Daily Values</h3>
+  Calories: <input id="recCal" type="number" value="1800">
+  Protein(g): <input id="recPro" type="number" value="60">
+  Carbs(g): <input id="recCarb" type="number" value="250">
+  Fats(g): <input id="recFat" type="number" value="60">
+  Meals/day: <input id="mealsPerDay" type="number" value="5">
+</div>
+
+<div class="box">
+  <h3>2) Your Meals</h3>
+  <table>
+    <tr>
+      <th>Meal</th>
+      <th class="wide">Food item(s)</th>
+      <th>Calories</th>
+      <th>Protein (g)</th>
+      <th>Carbs (g)</th>
+      <th>Fats (g)</th>
+    </tr>
+
+    <tr>
+      <td>Breakfast</td>
+      <td><input class="food wide" type="text" placeholder="e.g., oatmeal + milk"></td>
+      <td><input class="cal" type="number"></td>
+      <td><input class="pro" type="number"></td>
+      <td><input class="carb" type="number"></td>
+      <td><input class="fat" type="number"></td>
+    </tr>
+
+    <tr>
+      <td>Snack 1</td>
+      <td><input class="food wide" type="text" placeholder="e.g., apple"></td>
+      <td><input class="cal" type="number"></td>
+      <td><input class="pro" type="number"></td>
+      <td><input class="carb" type="number"></td>
+      <td><input class="fat" type="number"></td>
+    </tr>
+
+    <tr>
+      <td>Lunch</td>
+      <td><input class="food wide" type="text" placeholder="e.g., chicken + rice"></td>
+      <td><input class="cal" type="number"></td>
+      <td><input class="pro" type="number"></td>
+      <td><input class="carb" type="number"></td>
+      <td><input class="fat" type="number"></td>
+    </tr>
+
+    <tr>
+      <td>Snack 2</td>
+      <td><input class="food wide" type="text" placeholder="e.g., yogurt"></td>
+      <td><input class="cal" type="number"></td>
+      <td><input class="pro" type="number"></td>
+      <td><input class="carb" type="number"></td>
+      <td><input class="fat" type="number"></td>
+    </tr>
+
+    <tr>
+      <td>Dinner</td>
+      <td><input class="food wide" type="text" placeholder="e.g., fish + salad"></td>
+      <td><input class="cal" type="number"></td>
+      <td><input class="pro" type="number"></td>
+      <td><input class="carb" type="number"></td>
+      <td><input class="fat" type="number"></td>
+    </tr>
+  </table>
+
+  <button onclick="calculate()">✅ Calculate</button>
+  <div class="result" id="output"></div>
+</div>
+
+<script>
+function sumInputs(className) {
+  let inputs = document.getElementsByClassName(className);
+  let total = 0;
+  for (let i = 0; i < inputs.length; i++) total += Number(inputs[i].value || 0);
+  return total;
+}
+function status(diff){
+  if (diff === 0) return "OK";
+  return diff > 0 ? "Too high" : "Too low";
+}
+function calculate() {
+  let totalCal = sumInputs("cal");
+  let totalPro = sumInputs("pro");
+  let totalCarb = sumInputs("carb");
+  let totalFat = sumInputs("fat");
+
+  let recCal = Number(document.getElementById("recCal").value || 0);
+  let recPro = Number(document.getElementById("recPro").value || 0);
+  let recCarb = Number(document.getElementById("recCarb").value || 0);
+  let recFat = Number(document.getElementById("recFat").value || 0);
+  let mealsPerDay = Number(document.getElementById("mealsPerDay").value || 1);
+
+  let diffCal = totalCal - recCal;
+  let diffPro = totalPro - recPro;
+  let diffCarb = totalCarb - recCarb;
+  let diffFat = totalFat - recFat;
+
+  let kcalPerMeal = recCal ? (recCal / mealsPerDay) : 0;
+  let proPerMeal = recPro ? (recPro / mealsPerDay) : 0;
+  let carbPerMeal = recCarb ? (recCarb / mealsPerDay) : 0;
+  let fatPerMeal = recFat ? (recFat / mealsPerDay) : 0;
+
+  document.getElementById("output").innerHTML = `
+    <h3>📊 Results</h3>
+    <p><b>Total Calories:</b> ${totalCal} (Difference: ${diffCal} → ${status(diffCal)})</p>
+    <p><b>Total Protein:</b> ${totalPro} g (Difference: ${diffPro} → ${status(diffPro)})</p>
+    <p><b>Total Carbs:</b> ${totalCarb} g (Difference: ${diffCarb} → ${status(diffCarb)})</p>
+    <p><b>Total Fats:</b> ${totalFat} g (Difference: ${diffFat} → ${status(diffFat)})</p>
+    <hr>
+    <p><b>Targets per meal (based on meals/day):</b></p>
+    <p>Calories/meal: ${kcalPerMeal.toFixed(0)} | Protein/meal: ${proPerMeal.toFixed(1)} g | Carbs/meal: ${carbPerMeal.toFixed(1)} g | Fats/meal: ${fatPerMeal.toFixed(1)} g</p>
+    <hr>
+    <p><b>Grams → Kilograms</b></p>
+    <p>Protein: ${(totalPro/1000).toFixed(3)} kg | Carbs: ${(totalCarb/1000).toFixed(3)} kg | Fats: ${(totalFat/1000).toFixed(3)} kg</p>
+  `;
+}
+</script>
+
+</body>
+</html>
